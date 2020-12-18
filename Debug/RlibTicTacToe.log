@@ -1,0 +1,11 @@
+﻿  tictactoe.c
+tictactoe.obj : error LNK2019: unresolved external symbol _InitWindow referenced in function _main
+tictactoe.obj : error LNK2019: unresolved external symbol _WindowShouldClose referenced in function _main
+tictactoe.obj : error LNK2019: unresolved external symbol _CloseWindow referenced in function _main
+tictactoe.obj : error LNK2019: unresolved external symbol _ClearBackground referenced in function _main
+tictactoe.obj : error LNK2019: unresolved external symbol _BeginDrawing referenced in function _main
+tictactoe.obj : error LNK2019: unresolved external symbol _EndDrawing referenced in function _main
+tictactoe.obj : error LNK2019: unresolved external symbol _SetTargetFPS referenced in function _main
+tictactoe.obj : error LNK2019: unresolved external symbol _DrawText referenced in function _main
+D:\C\VS\RlibTicTacToe\externals\lib\raylib.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'x86'
+D:\C\VS\RlibTicTacToe\Debug\RlibTicTacToe.exe : fatal error LNK1120: 8 unresolved externals
