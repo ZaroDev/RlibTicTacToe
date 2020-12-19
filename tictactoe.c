@@ -1,6 +1,4 @@
 #include "raylib.h"
-#include <stdio.h>
-#include <stdlib.h> 
 
 typedef struct Turn{
     int x;
@@ -22,6 +20,7 @@ int main(void)
     int scene = 0;
 
     int frame = 20;
+
     int tableWidth = (screenWidth / 3) - (4 * frame);// 220px 
     int tableHeigth = (screenHeight / 3) - (4 * frame);// 220px
     
@@ -31,8 +30,8 @@ int main(void)
 
     Rectangle table[3][3] = {
         {frame, frame, tableWidth, tableHeigth, 2 * frame + tableWidth, frame, tableWidth, tableHeigth, 3 * frame + 2 * tableWidth , frame, tableWidth, tableHeigth },
-        {frame, 2 * frame + tableHeigth, tableWidth, tableHeigth , 2 * frame + tableWidth, 2 * frame + tableHeigth , tableWidth, tableHeigth , 3 * frame + 2 * tableWidth, 2 * frame + tableHeigth, tableWidth, tableHeigth },
-        {frame, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth , 2 * frame + tableWidth, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth , 3 * frame + 2 * tableWidth, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth }
+        {frame, 2 * frame + tableHeigth, tableWidth, tableHeigth , 2 * frame + tableWidth, 2 * frame + tableHeigth , tableWidth, tableHeigth, 3 * frame + 2 * tableWidth, 2 * frame + tableHeigth, tableWidth, tableHeigth },
+        {frame, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth, 2 * frame + tableWidth, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth, 3 * frame + 2 * tableWidth, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth }
     };
     
     int tableArr[3][3] = { 0 };
@@ -40,6 +39,7 @@ int main(void)
 
     Turn player = { -1,-1 };
     Turn CPU = { -1, -1 };
+
     int playerId = -1;
     int CPUId = 1;
     int startPos = 0;
@@ -48,7 +48,6 @@ int main(void)
     Vector2 mousePos = { 0, 0 };
 
     bool turnCPU = false;
-    Turn previousCPU = { -1,-1 };
     bool validCPU = false;
 
     bool winPlayer = false;
@@ -61,21 +60,21 @@ int main(void)
     int radius = 70;
     int innerRadius = 60;
 
-    int framesCounter = 0;
-    int counterFPS = 0;
+    int framesCounter = 0;// frames since the game start
+    int counterFPS = 0; // FPS 
 
     SetTargetFPS(60);
     SetWindowIcon(icon);
 
-   
-    while (!WindowShouldClose()) 
+    while (!WindowShouldClose() && !IsKeyPressed(KEY_ESCAPE)) 
     {
         counterFPS = GetFPS();
         SetWindowTitle(TextFormat("Tic-Tac-Toe FPS %i", counterFPS));
 
         //UPDATE
-        if (scene == 1)
+        if ((scene == 1) && (winPlayer == false) && (winCPU == false) && (draw == false))
         {
+            //Player move
             mousePos = GetMousePosition();
             for (int x = 0; x < 3; x++)
             {
@@ -102,7 +101,7 @@ int main(void)
                     }
                 }
             }
-
+            //CPU move
             if (turnCPU)
             {
                 computerMove(tableArr);
@@ -110,9 +109,11 @@ int main(void)
             }
 
             int winner = win(tableArr, &startPos, &endPos);
+            // Winner check
             if (winner == playerId) winPlayer = true;
             else if (winner == CPUId) winCPU = true;
             int counter = 0;
+            // Draw check
             for (int y = 0; y < 3; y++)
             {
                 for (int x = 0; x < 3; x++)
@@ -135,7 +136,6 @@ int main(void)
             DrawText("Welcome to TIC-TAC-TOE",40, screenHeight / 2 + 40, 40, BLACK);
             if((framesCounter / 30) % 2 == 0) DrawText("Click to play!", 60, screenHeight / 2 + 90, 40, BLACK);
             
-
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) scene++;
 
             EndDrawing();
@@ -170,8 +170,10 @@ int main(void)
                     }
                 }
             }
+
             Vector2 starPosV = { table[startPos / 3][startPos % 3].x + tableWidth / 2, table[startPos / 3][startPos % 3].y + tableHeigth / 2 };
             Vector2 endPosV = { table[endPos / 3][endPos % 3].x + tableWidth / 2, table[endPos / 3][endPos % 3].y + tableHeigth / 2 };
+
             if (winPlayer == true)
             {
                 DrawLineEx(starPosV, endPosV, 60, RED);
@@ -229,9 +231,23 @@ int main(void)
                     draw = false;
                 }
             }
+            if (IsKeyPressed(KEY_R))
+            {
+                for (int y = 0; y < 3; y++)
+                {
+                    for (int x = 0; x < 3; x++)
+                    {
+                        tableArr[y][x] = 0;
+                    }
+                }
+                CPUWins = 0;
+                playerWins = 0;
+            }
 
             DrawText(TextFormat("Player games won: %i", playerWins), 20, 750, 30, RAYWHITE);
             DrawText(TextFormat("CPU games won: %i", CPUWins), 20, 790, 30, RAYWHITE);
+            DrawText("Press R to restart", 20, 830, 30, RAYWHITE);
+            DrawText("Press ESC to exit", 20, 870, 30, RAYWHITE);
 
             EndDrawing();
         }break;
@@ -276,7 +292,7 @@ int Minimax(int* board, int playerID)
     {//For all moves,
         
         if (board[i] == 0) 
-        {//If legal,
+        {//If legal
             board[i] = playerID;//Try the move
             int thisScore = -Minimax(board, playerID * -1);
             if (thisScore > score) 

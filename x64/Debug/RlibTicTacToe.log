@@ -1,19 +1,19 @@
 ﻿  tictactoe.c
-D:\C\VS\RlibTicTacToe\tictactoe.c(108,38): warning C4047: 'function': 'int *' differs in levels of indirection from 'int [3][3]'
-D:\C\VS\RlibTicTacToe\tictactoe.c(108,30): warning C4024: 'computerMove': different types for formal and actual parameter 1
-D:\C\VS\RlibTicTacToe\tictactoe.c(112,38): warning C4047: 'function': 'int *' differs in levels of indirection from 'int [3][3]'
-D:\C\VS\RlibTicTacToe\tictactoe.c(112,30): warning C4024: 'win': different types for formal and actual parameter 1
+D:\C\VS\RlibTicTacToe\tictactoe.c(107,38): warning C4047: 'function': 'int *' differs in levels of indirection from 'int [3][3]'
+D:\C\VS\RlibTicTacToe\tictactoe.c(107,30): warning C4024: 'computerMove': different types for formal and actual parameter 1
+D:\C\VS\RlibTicTacToe\tictactoe.c(111,38): warning C4047: 'function': 'int *' differs in levels of indirection from 'int [3][3]'
+D:\C\VS\RlibTicTacToe\tictactoe.c(111,30): warning C4024: 'win': different types for formal and actual parameter 1
 D:\C\VS\RlibTicTacToe\tictactoe.c(165,58): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
 D:\C\VS\RlibTicTacToe\tictactoe.c(165,73): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
 D:\C\VS\RlibTicTacToe\tictactoe.c(169,57): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
 D:\C\VS\RlibTicTacToe\tictactoe.c(169,72): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
-D:\C\VS\RlibTicTacToe\tictactoe.c(179,83): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
-D:\C\VS\RlibTicTacToe\tictactoe.c(179,116): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
-D:\C\VS\RlibTicTacToe\tictactoe.c(198,83): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
-D:\C\VS\RlibTicTacToe\tictactoe.c(198,116): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
-D:\C\VS\RlibTicTacToe\tictactoe.c(218,83): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
-D:\C\VS\RlibTicTacToe\tictactoe.c(218,116): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+D:\C\VS\RlibTicTacToe\tictactoe.c(181,83): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+D:\C\VS\RlibTicTacToe\tictactoe.c(181,116): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+D:\C\VS\RlibTicTacToe\tictactoe.c(200,83): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+D:\C\VS\RlibTicTacToe\tictactoe.c(200,116): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+D:\C\VS\RlibTicTacToe\tictactoe.c(220,83): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+D:\C\VS\RlibTicTacToe\tictactoe.c(220,116): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+D:\C\VS\RlibTicTacToe\tictactoe.c(32,1): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 D:\C\VS\RlibTicTacToe\tictactoe.c(33,1): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 D:\C\VS\RlibTicTacToe\tictactoe.c(34,1): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\C\VS\RlibTicTacToe\tictactoe.c(35,1): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
   RlibTicTacToe.vcxproj -> D:\C\VS\RlibTicTacToe\x64\Debug\RlibTicTacToe.exe
