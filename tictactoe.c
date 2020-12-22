@@ -1,5 +1,7 @@
 #include "raylib.h"
 
+#define FRAME 20
+
 typedef struct Turn{
     int x;
     int y;
@@ -19,25 +21,18 @@ int main(void)
 
     int scene = 0;
 
-    int frame = 20;
-
-    int tableWidth = (screenWidth / 3) - (4 * frame);// 220px 
-    int tableHeigth = (screenHeight / 3) - (4 * frame);// 220px
+    int tableWidth = 220;
+    int tableHeigth = 220;
     
     Texture2D cross = LoadTexture("Assets/cross.png");
     Texture2D circle = LoadTexture("Assets/circle.png");
     Image icon = LoadImage("Assets/cross.png");
 
-    Rectangle table[3][3] = {
-        {frame, frame, tableWidth, tableHeigth, 2 * frame + tableWidth, frame, tableWidth, tableHeigth, 3 * frame + 2 * tableWidth , frame, tableWidth, tableHeigth },
-        {frame, 2 * frame + tableHeigth, tableWidth, tableHeigth , 2 * frame + tableWidth, 2 * frame + tableHeigth , tableWidth, tableHeigth, 3 * frame + 2 * tableWidth, 2 * frame + tableHeigth, tableWidth, tableHeigth },
-        {frame, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth, 2 * frame + tableWidth, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth, 3 * frame + 2 * tableWidth, 3 * frame + 2 * tableWidth, tableWidth, tableHeigth }
-    };
-    
+    Rectangle table[3][3] = { 0 };
+
     int tableArr[3][3] = { 0 };
     bool circleStatus[3][3] = { 0 };
 
-    Turn player = { -1,-1 };
     Turn CPU = { -1, -1 };
 
     int playerId = -1;
@@ -48,31 +43,41 @@ int main(void)
     Vector2 mousePos = { 0, 0 };
 
     bool turnCPU = false;
-    bool validCPU = false;
 
     bool winPlayer = false;
     bool winCPU = false;
     bool draw = false;
+    bool gameEnd = false;
 
     int playerWins = 0;
     int CPUWins = 0;
 
-    int radius = 70;
-    int innerRadius = 60;
-
     int framesCounter = 0;// frames since the game start
     int counterFPS = 0; // FPS 
+
+    for (int x = 0; x < 3; x++)
+    {
+        for (int y = 0; y < 3; y++)
+        {
+            table[y][x].width = tableWidth;
+            table[y][x].height = tableHeigth;
+            table[y][x].x = FRAME + y * FRAME + y * table[y][x].width;
+            table[y][x].y = FRAME + x * FRAME + x * table[y][x].height;
+        }
+    }
 
     SetTargetFPS(60);
     SetWindowIcon(icon);
 
+    counterFPS = GetFPS();
+
+    SetWindowTitle(TextFormat("Tic-Tac-Toe FPS %i", counterFPS));
+
     while (!WindowShouldClose() && !IsKeyPressed(KEY_ESCAPE)) 
     {
-        counterFPS = GetFPS();
-        SetWindowTitle(TextFormat("Tic-Tac-Toe FPS %i", counterFPS));
 
         //UPDATE
-        if ((scene == 1) && (winPlayer == false) && (winCPU == false) && (draw == false))
+        if ((scene == 1) && (!winPlayer) && (!winCPU) && (!draw))
         {
             //Player move
             mousePos = GetMousePosition();
@@ -82,17 +87,11 @@ int main(void)
                 {
                     if (CheckCollisionPointRec(mousePos, table[y][x]))
                     {
-                        if (tableArr[y][x] == 0)
+                        if (tableArr[y][x] == 0) circleStatus[y][x] = true;
+                        else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && tableArr[y][x] == 0)
                         {
-                            circleStatus[y][x] = true;
-                        }
-                        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-                        {
-                            if (tableArr[y][x] == 0)
-                            {
-                                tableArr[y][x] = playerId;
-                                turnCPU = true;
-                            }
+                            tableArr[y][x] = playerId;
+                            turnCPU = true;
                         }
                     }
                     else if (!CheckCollisionPointRec(mousePos, table[y][x]))
@@ -110,10 +109,19 @@ int main(void)
 
             int winner = win(tableArr, &startPos, &endPos);
             // Winner check
-            if (winner == playerId) winPlayer = true;
-            else if (winner == CPUId) winCPU = true;
-            int counter = 0;
+            if (winner == playerId)
+            {
+                winPlayer = true;
+                gameEnd = true;
+            }
+            else if (winner == CPUId)
+            {
+                winCPU = true;
+                gameEnd = true;
+            }
+
             // Draw check
+            int counter = 0;
             for (int y = 0; y < 3; y++)
             {
                 for (int x = 0; x < 3; x++)
@@ -121,139 +129,130 @@ int main(void)
                     if (tableArr[y][x] != 0) counter++;
                 }
             }
-            if (counter >= 9) draw = true;
+            if (counter >= 9)
+            {
+                draw = true;
+                gameEnd = true;
+            }
         }
         framesCounter++;
-    
+
         switch (scene)
         {
-        case 0:
-        {
-            BeginDrawing();
-
-            ClearBackground(RAYWHITE);
-
-            DrawText("Welcome to TIC-TAC-TOE",40, screenHeight / 2 + 40, 40, BLACK);
-            if((framesCounter / 30) % 2 == 0) DrawText("Click to play!", 60, screenHeight / 2 + 90, 40, BLACK);
-            
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) scene++;
-
-            EndDrawing();
-        }break;
-        case 1:
-        {
-
-            BeginDrawing();
-
-            ClearBackground(BLACK);
-
-            for (int x = 0; x < 3; x++)// Drawing the table
+            case 0:
             {
-                for (int y = 0; y < 3; y++)
-                {
-                    DrawRectangleRec(table[y][x], RAYWHITE);
-                }
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) scene++;
             }
-
-
-            for (int x = 0; x < 3; x++)// Drawing the textures
+            case 1:
             {
-                for (int y = 0; y < 3; y++)
-                {
-                    if (tableArr[y][x] == playerId || circleStatus[y][x])
-                    {
-                        DrawTexture(circle, table[y][x].x, table[y][x].y, WHITE);
-                    }
-                    else if (tableArr[y][x] == CPUId)
-                    {
-                        DrawTexture(cross, table[y][x].x, table[y][x].y, WHITE);
-                    }
-                }
-            }
-
-            Vector2 starPosV = { table[startPos / 3][startPos % 3].x + tableWidth / 2, table[startPos / 3][startPos % 3].y + tableHeigth / 2 };
-            Vector2 endPosV = { table[endPos / 3][endPos % 3].x + tableWidth / 2, table[endPos / 3][endPos % 3].y + tableHeigth / 2 };
-
-            if (winPlayer == true)
-            {
-                DrawLineEx(starPosV, endPosV, 60, RED);
-
-                DrawText("Press ENTER to continue", table[2][0].x + tableWidth / 2, table[2][0].y + tableHeigth / 2, 40, RED);
-                if ((framesCounter / 30) % 2 == 0) DrawText("YOU WIN!", screenWidth / 3, screenHeight / 3, 60, GREEN);
-
-                if (IsKeyPressed(KEY_ENTER))
+                if (IsKeyPressed(KEY_R))
                 {
                     for (int y = 0; y < 3; y++)
                     {
                         for (int x = 0; x < 3; x++)
                         {
                             tableArr[y][x] = 0;
+                        }
+                    }
+                    CPUWins = 0;
+                    playerWins = 0;
+                }
+
+                if (IsKeyPressed(KEY_ENTER) && gameEnd)
+                {
+                    for (int y = 0; y < 3; y++)
+                    {
+                        for (int x = 0; x < 3; x++)
+                        {
+                             tableArr[y][x] = 0;
                         }
                     }
                     playerWins++;
                     winPlayer = false;
-                }
-            }
-            else if (winCPU == true)
-            {
-                DrawLineEx(starPosV, endPosV, 60, RED);
-                DrawText("Press ENTER to continue", table[2][0].x + tableWidth / 2, table[2][0].y + tableHeigth / 2, 40, RED);
-                if ((framesCounter / 30) % 2 == 0) DrawText("CPU WIN!", screenWidth / 3, screenHeight / 3, 60, GREEN);
-
-                if (IsKeyPressed(KEY_ENTER))
-                {
-                    for (int y = 0; y < 3; y++)
-                    {
-                        for (int x = 0; x < 3; x++)
-                        {
-                            tableArr[y][x] = 0;
-                        }
-                    }
-                    CPUWins++;
                     winCPU = false;
+                    draw = false;
+                    gameEnd = false;
                 }
             }
-            else if (draw == true)
+            default:break;
+        }
+    
+        BeginDrawing();
+
+        switch (scene)
+        {
+            case 0:
             {
-                if ((framesCounter / 30) % 2 == 0) DrawText("DRAW!", screenWidth / 3, screenHeight / 3, 60, RED);
 
-                DrawText("Press ENTER to continue", table[2][0].x + tableWidth / 2, table[2][0].y + tableHeigth / 2, 40, RED);
+                ClearBackground(RAYWHITE);
 
-                if (IsKeyPressed(KEY_ENTER))
+                DrawText("Welcome to TIC-TAC-TOE", 40, screenHeight / 2 + 40, 40, BLACK);
+                if ((framesCounter / 30) % 2 == 0) DrawText("Click to play!", 60, screenHeight / 2 + 90, 40, BLACK);
+
+            }break;
+            case 1:
+            {
+
+                ClearBackground(BLACK);
+
+                for (int x = 0; x < 3; x++)// Drawing the table
                 {
                     for (int y = 0; y < 3; y++)
                     {
-                        for (int x = 0; x < 3; x++)
+                        DrawRectangleRec(table[y][x], RAYWHITE);
+                    }
+                }
+
+                for (int x = 0; x < 3; x++)// Drawing the textures
+                {
+                    for (int y = 0; y < 3; y++)
+                    {
+                        if (tableArr[y][x] == playerId || circleStatus[y][x])
                         {
-                            tableArr[y][x] = 0;
+                            DrawTexture(circle, table[y][x].x, table[y][x].y, WHITE);
+                        }
+                        else if (tableArr[y][x] == CPUId)
+                        {
+                            DrawTexture(cross, table[y][x].x, table[y][x].y, WHITE);
                         }
                     }
-                    draw = false;
                 }
-            }
-            if (IsKeyPressed(KEY_R))
-            {
-                for (int y = 0; y < 3; y++)
+
+                Vector2 starPosV = { table[startPos / 3][startPos % 3].x + tableWidth / 2, table[startPos / 3][startPos % 3].y + tableHeigth / 2 };
+                Vector2 endPosV = { table[endPos / 3][endPos % 3].x + tableWidth / 2, table[endPos / 3][endPos % 3].y + tableHeigth / 2 };
+
+                if (winPlayer == true)
                 {
-                    for (int x = 0; x < 3; x++)
-                    {
-                        tableArr[y][x] = 0;
-                    }
+                    DrawLineEx(starPosV, endPosV, 60, RED);
+                    if ((framesCounter / 30) % 2 == 0) DrawText("YOU WIN!", 50, 330, 60, GREEN);
+                    DrawText("Press ENTER to continue", 50, 450, 40, RED);
+
                 }
-                CPUWins = 0;
-                playerWins = 0;
-            }
+                else if (winCPU == true)
+                {
+                    DrawLineEx(starPosV, endPosV, 60, RED);
+                    if ((framesCounter / 30) % 2 == 0) DrawText("CPU WIN!", 50, 330, 60, GREEN);
+                    DrawText("Press ENTER to continue", 50, 450, 40, RED);
+                }
+                else if (draw == true)
+                {
+                    if ((framesCounter / 30) % 2 == 0) DrawText("DRAW!", 50, 330, 60, RED);
+                    DrawText("Press ENTER to continue", 50, 450, 40, RED);
+                }
 
-            DrawText(TextFormat("Player games won: %i", playerWins), 20, 750, 30, RAYWHITE);
-            DrawText(TextFormat("CPU games won: %i", CPUWins), 20, 790, 30, RAYWHITE);
-            DrawText("Press R to restart", 20, 830, 30, RAYWHITE);
-            DrawText("Press ESC to exit", 20, 870, 30, RAYWHITE);
+                DrawText(TextFormat("Player games won: %i", playerWins), 20, 750, 30, RAYWHITE);
+                DrawText(TextFormat("CPU games won: %i", CPUWins), 20, 790, 30, RAYWHITE);
+                DrawText("Press R to restart", 20, 830, 30, RAYWHITE);
+                DrawText("Press ESC to exit", 20, 870, 30, RAYWHITE);
 
-            EndDrawing();
-        }break;
+            }break;
+            default:break;
         }
+        EndDrawing();
     }
 
+    UnloadTexture(cross);
+    UnloadTexture(circle);
     
     CloseWindow(); 
 
