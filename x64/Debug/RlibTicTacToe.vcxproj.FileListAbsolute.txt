@@ -1,2 +1,0 @@
-D:\C\VS\RlibTicTacToe\x64\Debug\RlibTicTacToe.exe
-D:\C\VS\RlibTicTacToe\x64\Debug\RlibTicTacToe.pdb
